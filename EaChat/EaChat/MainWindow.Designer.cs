@@ -41,6 +41,7 @@ namespace EaChat
 			hpaned.BackgroundColor = Colors.LightSteelBlue;
 
 			chatList = new ListView();
+			chatList.HeadersVisible = false;
 			chatList.Margin = 5;
 			hpaned.Panel1.Content = chatList;
 
