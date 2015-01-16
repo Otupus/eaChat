@@ -25,6 +25,7 @@ using EaTopic.Participants;
 using EaTopic.Publishers;
 using EaTopic.Subscribers;
 using EaTopic.Participants.Builtin;
+using Xwt.Formats;
 
 namespace EaChat
 {
@@ -35,6 +36,8 @@ namespace EaChat
 		DataField<int> subscribersCol;
 		DataField<string> chatNameCol;
 		DataField<TopicInfo> topicCol;
+
+		string chatText;
 
 		Participant participant;
 		Publisher<ChatMessage> publisher;
@@ -59,11 +62,40 @@ namespace EaChat
 			participant.BuiltinTopic.PublisherDiscovered += HandlePublisherDiscovered;
 			participant.BuiltinTopic.SubscriberDiscovered += HandleSubscriberDiscovered;
 
+			chatText  = "";
 			var topic = participant.CreateTopic<ChatMessage>("DevChat");
 			publisher  = topic.CreatePublisher();
 			subscriber = topic.CreateSubscriber();
+			subscriber.ReceivedInstance += HandleReceivedInstance;
 
+			chatTextEntry.KeyPressed += HandleKeySendPressed;
+			chatSendBtn.Clicked += HandleSend;
 			CloseRequested += HandleCloseRequested;
+		}
+
+		void HandleKeySendPressed(object sender, KeyEventArgs e)
+		{
+			if (e.Key == Key.Return)
+				Send();
+		}
+
+		void HandleSend(object sender, EventArgs e)
+		{
+			Send();
+		}
+
+		void Send()
+		{
+			var message = new ChatMessage("pleonex", chatTextEntry.Text, DateTime.Now);
+			publisher.Write(message);
+			chatTextEntry.Text = "";
+		}
+
+		void HandleReceivedInstance(ChatMessage instance)
+		{
+			chatText += string.Format("[{0}] {1}: {2}\n", 
+				instance.UserName, instance.Date, instance.Message);
+			chatView.LoadText(chatText, TextFormat.Plain);
 		}
 
 		void UpdateChatList(TopicInfo topic)
