@@ -38,11 +38,19 @@
     <Reference Include="Xwt.Gtk">
       <HintPath>..\xwt\Xwt.Gtk\bin\Release\Xwt.Gtk.dll</HintPath>
     </Reference>
+    <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\eaTopic\eaTopic\eaTopic.csproj">
       <Project>{D677C7DA-D0F0-404B-976C-911C5346D38A}</Project>
       <Name>eaTopic</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Program.cs" />
+    <Compile Include="MainWindow.cs" />
+    <Compile Include="MainWindow.Designer.cs">
+      <DependentUpon>MainWindow.cs</DependentUpon>
+    </Compile>
   </ItemGroup>
 </Project>
