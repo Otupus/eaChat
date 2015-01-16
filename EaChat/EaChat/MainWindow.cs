@@ -38,6 +38,7 @@ namespace EaChat
 		DataField<TopicInfo> topicCol;
 
 		string chatText;
+		string userName;
 
 		Participant participant;
 		Publisher<ChatMessage> publisher;
@@ -46,6 +47,18 @@ namespace EaChat
 		public MainWindow()
 		{
 			CreateComponents();
+
+			Dialog userDialog = new Dialog();
+			userDialog.Title = "Type your user name";
+			Table dialogTable = new Table();
+			dialogTable.Add(new Label("User name:"), 0, 0);
+			var userNameEntry = new TextEntry();
+			dialogTable.Add(userNameEntry, 1, 0);
+			userDialog.Content = dialogTable;
+			userDialog.Buttons.Add(new DialogButton(Command.Ok));
+			userDialog.Run(this);
+			userName = userNameEntry.Text;
+			userDialog.Dispose();
 
 			publishersCol  = new DataField<int>();
 			subscribersCol = new DataField<int>();
@@ -86,7 +99,7 @@ namespace EaChat
 
 		void Send()
 		{
-			var message = new ChatMessage("pleonex", chatTextEntry.Text, DateTime.Now);
+			var message = new ChatMessage(userName, chatTextEntry.Text, DateTime.Now);
 			publisher.Write(message);
 			chatTextEntry.Text = "";
 		}
