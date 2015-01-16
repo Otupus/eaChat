@@ -3,6 +3,8 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EaChat", "EaChat\EaChat.csproj", "{0097331F-0DD4-4AC7-BDCC-B810C203713E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "eaTopic", "..\eaTopic\eaTopic\eaTopic.csproj", "{D677C7DA-D0F0-404B-976C-911C5346D38A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x86 = Debug|x86
@@ -13,5 +15,9 @@ Global
 		{0097331F-0DD4-4AC7-BDCC-B810C203713E}.Debug|x86.Build.0 = Debug|x86
 		{0097331F-0DD4-4AC7-BDCC-B810C203713E}.Release|x86.ActiveCfg = Release|x86
 		{0097331F-0DD4-4AC7-BDCC-B810C203713E}.Release|x86.Build.0 = Release|x86
+		{D677C7DA-D0F0-404B-976C-911C5346D38A}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{D677C7DA-D0F0-404B-976C-911C5346D38A}.Debug|x86.Build.0 = Debug|Any CPU
+		{D677C7DA-D0F0-404B-976C-911C5346D38A}.Release|x86.ActiveCfg = Release|Any CPU
+		{D677C7DA-D0F0-404B-976C-911C5346D38A}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
