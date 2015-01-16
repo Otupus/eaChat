@@ -1,3 +1,6 @@
 [submodule "eaTopic"]
 	path = eaTopic
 	url = git@github.com:pleonex/eaTopic.git
+[submodule "EaChat/xwt"]
+	path = EaChat/xwt
+	url = git@github.com:mono/xwt.git

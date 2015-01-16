@@ -32,5 +32,17 @@
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Xwt">
+      <HintPath>..\xwt\Xwt.Gtk\bin\Release\Xwt.dll</HintPath>
+    </Reference>
+    <Reference Include="Xwt.Gtk">
+      <HintPath>..\xwt\Xwt.Gtk\bin\Release\Xwt.Gtk.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\eaTopic\eaTopic\eaTopic.csproj">
+      <Project>{D677C7DA-D0F0-404B-976C-911C5346D38A}</Project>
+      <Name>eaTopic</Name>
+    </ProjectReference>
   </ItemGroup>
 </Project>
