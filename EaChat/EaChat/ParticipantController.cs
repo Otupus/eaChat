@@ -20,11 +20,13 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using EaTopic.Participants;
 using EaTopic.Participants.Builtin;
 using EaTopic.Publishers;
 using EaTopic.Subscribers;
 using EaTopic.Topics;
+using System.Collections.ObjectModel;
 
 namespace EaChat
 {
@@ -57,7 +59,7 @@ namespace EaChat
 		public void CreateTopic(string topicName, ReceivedInstanceHandleEvent<ChatMessage> handle)
 		{
 			if (!topics.ContainsKey(topicName))
-				topics.Add(topicName, new TopicEntities());
+				topics.Add(topicName, new TopicEntities(topicName));
 
 			var topic = participant.CreateTopic<ChatMessage>(topicName);
 			topics[topicName].Topic = topic;
@@ -88,12 +90,12 @@ namespace EaChat
 		{
 			string topicName = pubInfo.TopicName;
 			if (!topics.ContainsKey(topicName))
-				topics.Add(topicName, new TopicEntities());
+				topics.Add(topicName, new TopicEntities(e.Topic));
 
 			if (e.Change == BuiltinEntityChange.Added)
-				topics[topicName].NumPublishers++;
+				topics[topicName].AddPublisherInfo(pubInfo);
 			else if (e.Change == BuiltinEntityChange.Removed)
-				topics[topicName].NumPublishers--;
+				topics[topicName].RemovePublisherInfo(pubInfo);
 
 			UpdateWindowChatInfo(topicName);
 		}
@@ -102,12 +104,12 @@ namespace EaChat
 		{
 			string topicName = subInfo.TopicName;
 			if (!topics.ContainsKey(topicName))
-				topics.Add(topicName, new TopicEntities());
+				topics.Add(topicName, new TopicEntities(e.Topic));
 
 			if (e.Change == BuiltinEntityChange.Added)
-				topics[topicName].NumSubscribers++;
+				topics[topicName].AddSubscriberInfo(subInfo);
 			else if (e.Change == BuiltinEntityChange.Removed)
-				topics[topicName].NumSubscribers--;
+				topics[topicName].RemoveSubscriberInfo(subInfo);
 
 			UpdateWindowChatInfo(topicName);
 		}
@@ -116,19 +118,70 @@ namespace EaChat
 		{
 			MainWindow.UpdateChatInfo(
 				topicName,
-				topics[topicName].NumPublishers,
-				topics[topicName].NumSubscribers
+				topics[topicName].PublishersInfo.Count,
+				topics[topicName].SubscribersInfo.Count
 			);
 		}
 
 		class TopicEntities
 		{
+			readonly List<PublisherInfo> publishersInfo;
+			readonly List<SubscriberInfo> subscribersInfo;
+
+			public TopicEntities(string topicName)
+				: this(new TopicInfo { TopicName = topicName, TopicType = TopicDataType.FromGeneric<ChatMessage>() })
+			{
+
+			}
+
+			public TopicEntities(TopicInfo topicInfo)
+			{
+				TopicInfo = topicInfo;
+				publishersInfo = new List<PublisherInfo>();
+				subscribersInfo = new List<SubscriberInfo>();
+			}
+
 			public Topic<ChatMessage> Topic { get; set; }
 			public Publisher<ChatMessage> Publisher { get; set; }
 			public Subscriber<ChatMessage> Subscriber { get; set; }
-			
-			public int NumPublishers { get; set; }
-			public int NumSubscribers { get; set; }
+
+			public TopicInfo TopicInfo { get; private set; }
+
+			public ReadOnlyCollection<PublisherInfo> PublishersInfo { 
+				get {
+					return new ReadOnlyCollection<PublisherInfo>(publishersInfo);
+				}
+			}
+
+			public ReadOnlyCollection<SubscriberInfo> SubscribersInfo { 
+				get {
+					return new ReadOnlyCollection<SubscriberInfo>(subscribersInfo);
+				}
+			}
+
+			public void AddPublisherInfo(PublisherInfo info)
+			{
+				publishersInfo.Add(info);
+			}
+
+			public void RemovePublisherInfo(PublisherInfo info)
+			{
+				int idx = publishersInfo.FindIndex(p => p.Uuid.SequenceEqual(info.Uuid));
+				if (idx != -1)
+					publishersInfo.RemoveAt(idx);
+			}
+
+			public void AddSubscriberInfo(SubscriberInfo info)
+			{
+				subscribersInfo.Add(info);
+			}
+
+			public void RemoveSubscriberInfo(SubscriberInfo info)
+			{
+				int idx = subscribersInfo.FindIndex(s => s.Uuid.SequenceEqual(info.Uuid));
+				if (idx != -1)
+					subscribersInfo.RemoveAt(idx);
+			}
 		}
 	}
 }
