@@ -27,27 +27,28 @@ namespace EaChat
 	{
 		ParticipantController controller;
 
-		public ChatBoxView(ParticipantController controller)
+		public ChatBoxView(ParticipantController controller, string chatName)
 		{
 			CreateComponents();
 
-			ChatText = "";
+			ChatName = chatName;
 			this.controller = controller;
+			this.controller.CreateTopic(chatName, ShowMessage);
 
 			textEntry.KeyPressed += HandleKeySendPressed;
 			sendBtn.Clicked += HandleSend;
 		}
 
-		public string ChatText {
+		public string ChatName {
 			get;
 			private set;
 		}
 
 		public void ShowMessage(ChatMessage instance)
 		{
-			ChatText += string.Format("[{0}] {1}: {2}\n", 
+			string chatText = string.Format("[{0}] {1}: {2}\n", 
 				instance.UserName, instance.Date, instance.Message);
-			view.Markdown += ChatText;
+			view.Markdown += chatText;
 		}
 
 		void HandleKeySendPressed(object sender, KeyEventArgs e)
@@ -63,7 +64,7 @@ namespace EaChat
 
 		void Send()
 		{
-			controller.Send(textEntry.Text, null);
+			controller.Send(textEntry.Text, ChatName);
 			textEntry.Text = string.Empty;
 		}
 	}

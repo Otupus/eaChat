@@ -40,12 +40,6 @@ namespace EaChat
 			participant.BuiltinTopic.SubscriberDiscovered += HandleSubscriberDiscovered;
 			topics = new Dictionary<string, TopicEntities>();
 
-			// Start temp code to ui testing
-			var t = participant.CreateTopic<ChatMessage>("test");
-			t.CreatePublisher();
-			t.CreateSubscriber();
-			// End temp code
-
 			UserName   = userName;
 			MainWindow = window;
 		}
@@ -58,6 +52,19 @@ namespace EaChat
 		public MainWindow MainWindow {
 			get;
 			private set;
+		}
+
+		public void CreateTopic(string topicName, ReceivedInstanceHandleEvent<ChatMessage> handle)
+		{
+			if (!topics.ContainsKey(topicName))
+				topics.Add(topicName, new TopicEntities());
+
+			var topic = participant.CreateTopic<ChatMessage>(topicName);
+			topics[topicName].Topic = topic;
+
+			topics[topicName].Publisher  = topic.CreatePublisher(UserName);
+			topics[topicName].Subscriber = topic.CreateSubscriber(UserName);
+			topics[topicName].Subscriber.ReceivedInstance += handle;
 		}
 
 		public bool IsTopicOpened(string topicName)

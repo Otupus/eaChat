@@ -51,7 +51,14 @@ namespace EaChat
 			string userName = AskUserName();
 			controller = new ParticipantController(userName, this);
 
+			addChatBtn.Clicked += HandleAddChat;
+
 			CloseRequested += HandleCloseRequested;
+		}
+
+		void HandleAddChat(object sender, EventArgs e)
+		{
+			RequestChat(AskChatName());
 		}
 
 		public void UpdateChatInfo(string chatName, int numPub, int numSub)
@@ -91,6 +98,11 @@ namespace EaChat
 		void HandleChatSelected(object sender, EventArgs e)
 		{
 			string chatName = chatStore.GetValue(chatList.SelectedRow, chatNameCol);
+			RequestChat(chatName);
+		}
+
+		void RequestChat(string chatName)
+		{
 			if (!controller.IsTopicOpened(chatName))
 				CreateChat(chatName);
 			else
@@ -99,7 +111,7 @@ namespace EaChat
 
 		void CreateChat(string chatName)
 		{
-			chatTabs.Add(new ChatBoxView(controller), chatName);
+			chatTabs.Add(new ChatBoxView(controller, chatName), chatName);
 		}
 
 		void SelectChat(string chatName)

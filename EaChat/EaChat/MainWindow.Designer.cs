@@ -27,6 +27,9 @@ namespace EaChat
 	public partial class MainWindow : Window
 	{
 		ListView chatList;
+		Button addChatBtn;
+		Button remChatBtn;
+
 		Notebook chatTabs;
 
 		void CreateComponents()
@@ -38,11 +41,23 @@ namespace EaChat
 			var hpaned = new HPaned();
 			hpaned.BackgroundColor = Colors.LightSteelBlue;
 
+			var listBox = new VBox();
+			hpaned.Panel1.Content = listBox;
+
 			chatList = new ListView();
 			chatList.WidthRequest = 150;
 			chatList.HeadersVisible = false;
 			chatList.Margin = 5;
-			hpaned.Panel1.Content = chatList;
+			listBox.PackStart(chatList, true, true);
+
+			var btnBox = new HBox();
+			listBox.PackStart(btnBox, false, hpos: WidgetPlacement.Fill);
+
+			addChatBtn = new Button(StockIcons.Add);
+			btnBox.PackStart(addChatBtn);
+
+			remChatBtn = new Button(StockIcons.Remove);
+			btnBox.PackStart(remChatBtn);
 
 			chatTabs = new Notebook();
 			chatTabs.WidthRequest = 650;
@@ -54,23 +69,33 @@ namespace EaChat
 
 		string AskUserName()
 		{
-			Dialog userDialog = new Dialog();
+			return AskTextDialog("Type your user name", "User name:");
+		}
 
-			userDialog.Title = "Type your user name";
-			userDialog.Buttons.Add(new DialogButton(Command.Ok));
+		string AskChatName()
+		{
+			return AskTextDialog("Type the new chat name", "Chat name:");
+		}
+
+		string AskTextDialog(string message, string label)
+		{
+			Dialog dialog = new Dialog();
+
+			dialog.Title = message;
+			dialog.Buttons.Add(new DialogButton(Command.Ok));
 
 			Table dialogTable = new Table();
-			userDialog.Content = dialogTable;
+			dialog.Content = dialogTable;
 
-			var userNameEntry = new TextEntry();
-			dialogTable.Add(userNameEntry, 1, 0);
-			dialogTable.Add(new Label("User name:"), 0, 0);
+			var textEntry = new TextEntry();
+			dialogTable.Add(textEntry, 1, 0);
+			dialogTable.Add(new Label(label), 0, 0);
 
-			userDialog.Run(this);
-			string userName = userNameEntry.Text;
+			dialog.Run(this);
+			string text = textEntry.Text;
 
-			userDialog.Dispose();
-			return userName;
+			dialog.Dispose();
+			return text;
 		}
 	}
 }
