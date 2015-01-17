@@ -21,14 +21,17 @@
 using System;
 using Xwt;
 using Xwt.Formats;
+using Xwt.Drawing;
 
 namespace EaChat
 {
 	public partial class MainWindow
 	{
 		ListStore chatStore;
-		DataField<int> publishersCol;
-		DataField<int> subscribersCol;
+		DataField<int>    publishersCol;
+		DataField<Image>  publisherImgCol;
+		DataField<int>    subscribersCol;
+		DataField<Image>  subscriberImgCol;
 		DataField<string> chatNameCol;
 
 		ParticipantController controller;
@@ -37,14 +40,17 @@ namespace EaChat
 		{
 			CreateComponents();
 
-			publishersCol  = new DataField<int>();
-			subscribersCol = new DataField<int>();
-			chatNameCol    = new DataField<string>();
+			publishersCol    = new DataField<int>();
+			publisherImgCol  = new DataField<Image>();
+			subscribersCol   = new DataField<int>();
+			subscriberImgCol = new DataField<Image>();
+			chatNameCol      = new DataField<string>();
 
-			chatStore = new ListStore(publishersCol, subscribersCol, chatNameCol);
+			chatStore = new ListStore(publishersCol, publisherImgCol, subscribersCol, 
+				subscriberImgCol, chatNameCol);
 			chatList.DataSource = chatStore;
-			chatList.Columns.Add("Publishers", publishersCol);
-			chatList.Columns.Add("Subscribers", subscribersCol);
+			chatList.Columns.Add("Publishers", publisherImgCol, publishersCol);
+			chatList.Columns.Add("Subscribers", subscriberImgCol, subscribersCol);
 			chatList.Columns.Add("Name", chatNameCol);
 			chatList.SelectionChanged += HandleChatSelected;
 
@@ -89,9 +95,11 @@ namespace EaChat
 		{
 			int row = chatStore.AddRow();
 			chatStore.SetValues(row,
-				publishersCol,  numPub,
-				subscribersCol, numSub,
-				chatNameCol,    chatName
+				publishersCol,    numPub,
+				publisherImgCol,  Image.FromResource("EaChat.res.arrow_up.png"),
+				subscribersCol,   numSub,
+				subscriberImgCol, Image.FromResource("EaChat.res.arrow_down.png"),
+				chatNameCol,      chatName
 			);
 		}
 

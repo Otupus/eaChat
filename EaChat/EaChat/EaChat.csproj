@@ -59,4 +59,11 @@
       <DependentUpon>ChatBoxView.cs</DependentUpon>
     </Compile>
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="res\" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="res\arrow_down.png" />
+    <EmbeddedResource Include="res\arrow_up.png" />
+  </ItemGroup>
 </Project>
