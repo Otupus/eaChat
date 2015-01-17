@@ -49,6 +49,9 @@ namespace EaChat
 			chatList.SelectionChanged += HandleChatSelected;
 
 			string userName = AskUserName();
+			if (string.IsNullOrEmpty(userName))
+				Application.Exit();
+
 			controller = new ParticipantController(userName, this);
 
 			addChatBtn.Clicked += HandleAddChat;
@@ -58,7 +61,10 @@ namespace EaChat
 
 		void HandleAddChat(object sender, EventArgs e)
 		{
-			RequestChat(AskChatName());
+			var chatName = AskChatName();
+
+			if (!string.IsNullOrEmpty(chatName))
+				RequestChat(chatName);
 		}
 
 		public void UpdateChatInfo(string chatName, int numPub, int numSub)
