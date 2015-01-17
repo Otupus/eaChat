@@ -46,6 +46,7 @@ namespace EaChat
 			chatList.Columns.Add("Publishers", publishersCol);
 			chatList.Columns.Add("Subscribers", subscribersCol);
 			chatList.Columns.Add("Name", chatNameCol);
+			chatList.SelectionChanged += HandleChatSelected;
 
 			string userName = AskUserName();
 			controller = new ParticipantController(userName, this);
@@ -85,6 +86,27 @@ namespace EaChat
 		{
 			chatStore.SetValue(row, publishersCol, numPub);
 			chatStore.SetValue(row, subscribersCol, numSub);
+		}
+
+		void HandleChatSelected(object sender, EventArgs e)
+		{
+			string chatName = chatStore.GetValue(chatList.SelectedRow, chatNameCol);
+			if (!controller.IsTopicOpened(chatName))
+				CreateChat(chatName);
+			else
+				SelectChat(chatName);
+		}
+
+		void CreateChat(string chatName)
+		{
+			chatTabs.Add(new ChatBoxView(controller), chatName);
+		}
+
+		void SelectChat(string chatName)
+		{
+			foreach (var tab in chatTabs.Tabs)
+				if (tab.Label == chatName)
+					chatTabs.CurrentTab = tab;
 		}
 
 		void HandleCloseRequested(object sender, CloseRequestedEventArgs args)

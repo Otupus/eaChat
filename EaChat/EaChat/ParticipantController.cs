@@ -60,6 +60,14 @@ namespace EaChat
 			private set;
 		}
 
+		public bool IsTopicOpened(string topicName)
+		{
+			if (!topics.ContainsKey(topicName))
+				return false;
+
+			return topics[topicName].Publisher != null;
+		}
+
 		public void Send(string text, string topicName)
 		{
 			if (string.IsNullOrEmpty(topicName) || !topics.ContainsKey(topicName))
