@@ -23,28 +23,52 @@ using Xwt;
 
 namespace EaChat
 {
-	public partial class ChatBoxView : VBox
+	public partial class ChatBoxView : HBox
 	{
 		MarkdownView view;
 		TextEntry textEntry;
 		Button sendBtn;
 
+		ListView userList;
+		TextEntry filterText;
+		Button filterBtn;
+
 		void CreateComponents()
 		{
+			var chatBox = new VBox();
+			PackStart(chatBox, true, true);
+
 			view = new MarkdownView();
 			view.Margin = 5;
 			view.MarginBottom = 0;
-			PackStart(view, true, true);
+			chatBox.PackStart(view, true, true);
 
 			var chatMsgBox = new HBox();
 			chatMsgBox.Margin = 5;
-			PackStart(chatMsgBox);
+			chatBox.PackStart(chatMsgBox);
 
 			textEntry = new TextEntry();
 			chatMsgBox.PackStart(textEntry, true);
 		
 			sendBtn = new Button("Send!");
 			chatMsgBox.PackStart(sendBtn, vpos: WidgetPlacement.Center);
+
+			var extraBox = new VBox();
+			extraBox.WidthRequest = 100;
+			PackStart(extraBox);
+
+			userList = new ListView();
+			userList.HeadersVisible = false;
+			extraBox.PackStart(userList, true, true);
+			extraBox.PackStart(new Label("Message filter"));
+
+			filterText = new TextEntry();
+			filterText.Sensitive = false;
+			extraBox.PackStart(filterText, hpos: WidgetPlacement.Fill);
+
+			filterBtn = new Button("Filter");
+			filterBtn.Sensitive = false;
+			extraBox.PackStart(filterBtn, hpos: WidgetPlacement.Fill);
 		}
 	}
 }
