@@ -51,6 +51,8 @@ namespace EaChat
 			listBox.PackStart(chatList, true, true);
 
 			var btnBox = new HBox();
+			btnBox.Margin = 5;
+			btnBox.MarginTop = 0;
 			listBox.PackStart(btnBox, false, hpos: WidgetPlacement.Fill);
 
 			addChatBtn = new Button(StockIcons.Add);
