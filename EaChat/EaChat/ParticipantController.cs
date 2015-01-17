@@ -33,14 +33,18 @@ namespace EaChat
 	public class ParticipantController
 	{
 		Participant participant;
+		BuiltinTopic builtinTopic;
 		Dictionary<string, TopicEntities> topics;
 
 		public ParticipantController(string userName, MainWindow window)
 		{
-			participant = new Participant(0);
-			participant.BuiltinTopic.PublisherDiscovered  += HandlePublisherDiscovered;
-			participant.BuiltinTopic.SubscriberDiscovered += HandleSubscriberDiscovered;
 			topics = new Dictionary<string, TopicEntities>();
+			participant = new Participant(0);
+
+			builtinTopic = participant.BuiltinTopic;
+		    builtinTopic.PublisherDiscovered  += HandlePublisherDiscovered;
+			builtinTopic.SubscriberDiscovered += HandleSubscriberDiscovered;
+			builtinTopic.TopicDiscovered += HandleTopicDiscovered;
 
 			UserName   = userName;
 			MainWindow = window;
@@ -48,7 +52,7 @@ namespace EaChat
 
 		public string UserName {
 			get;
-			set;
+			private set;
 		}
 
 		public MainWindow MainWindow {
@@ -58,23 +62,18 @@ namespace EaChat
 
 		public void CreateTopic(string topicName, ReceivedInstanceHandleEvent<ChatMessage> handle)
 		{
-			if (!topics.ContainsKey(topicName))
-				topics.Add(topicName, new TopicEntities(topicName));
-
 			var topic = participant.CreateTopic<ChatMessage>(topicName);
-			topics[topicName].Topic = topic;
 
-			topics[topicName].Publisher  = topic.CreatePublisher(UserName);
-			topics[topicName].Subscriber = topic.CreateSubscriber(UserName);
-			topics[topicName].Subscriber.ReceivedInstance += handle;
+			var publisher  = topic.CreatePublisher(UserName);
+			var subscriber = topic.CreateSubscriber(UserName);
+			subscriber.ReceivedInstance += handle;
+
+			topics.Add(topicName, new TopicEntities(topic, publisher, subscriber));
 		}
 
 		public bool IsTopicOpened(string topicName)
 		{
-			if (!topics.ContainsKey(topicName))
-				return false;
-
-			return topics[topicName].Publisher != null;
+			return topics.ContainsKey(topicName);
 		}
 
 		public void Send(string text, string topicName)
@@ -86,103 +85,43 @@ namespace EaChat
 			topics[topicName].Publisher.Write(message);
 		}
 
+		void HandleTopicDiscovered(TopicInfo topicInfo, BuiltinEventArgs e)
+		{
+			UpdateWindowChatInfo(topicInfo);
+		}
+
 		void HandlePublisherDiscovered(PublisherInfo pubInfo, BuiltinEventArgs e)
 		{
-			string topicName = pubInfo.TopicName;
-			if (!topics.ContainsKey(topicName))
-				topics.Add(topicName, new TopicEntities(e.Topic));
-
-			if (e.Change == BuiltinEntityChange.Added)
-				topics[topicName].AddPublisherInfo(pubInfo);
-			else if (e.Change == BuiltinEntityChange.Removed)
-				topics[topicName].RemovePublisherInfo(pubInfo);
-
-			UpdateWindowChatInfo(topicName);
+			UpdateWindowChatInfo(e.Topic);
 		}
 
 		void HandleSubscriberDiscovered (SubscriberInfo subInfo, BuiltinEventArgs e)
 		{
-			string topicName = subInfo.TopicName;
-			if (!topics.ContainsKey(topicName))
-				topics.Add(topicName, new TopicEntities(e.Topic));
-
-			if (e.Change == BuiltinEntityChange.Added)
-				topics[topicName].AddSubscriberInfo(subInfo);
-			else if (e.Change == BuiltinEntityChange.Removed)
-				topics[topicName].RemoveSubscriberInfo(subInfo);
-
-			UpdateWindowChatInfo(topicName);
+			UpdateWindowChatInfo(e.Topic);
 		}
-
-		void UpdateWindowChatInfo(string topicName)
+			
+		void UpdateWindowChatInfo(TopicInfo topicInfo)
 		{
 			MainWindow.UpdateChatInfo(
-				topicName,
-				topics[topicName].PublishersInfo.Count,
-				topics[topicName].SubscribersInfo.Count
+				topicInfo.TopicName,
+				builtinTopic.GetPublishers(topicInfo).Count(),
+				builtinTopic.GetSubscribers(topicInfo).Count()
 			);
 		}
 
-		class TopicEntities
+		struct TopicEntities
 		{
-			readonly List<PublisherInfo> publishersInfo;
-			readonly List<SubscriberInfo> subscribersInfo;
-
-			public TopicEntities(string topicName)
-				: this(new TopicInfo { TopicName = topicName, TopicType = TopicDataType.FromGeneric<ChatMessage>() })
+			public TopicEntities(Topic<ChatMessage> topic, Publisher<ChatMessage> publisher,
+				Subscriber<ChatMessage> subscriber) : this()
 			{
-
+				this.Topic = topic;
+				this.Publisher  = publisher;
+				this.Subscriber = subscriber;
 			}
 
-			public TopicEntities(TopicInfo topicInfo)
-			{
-				TopicInfo = topicInfo;
-				publishersInfo = new List<PublisherInfo>();
-				subscribersInfo = new List<SubscriberInfo>();
-			}
-
-			public Topic<ChatMessage> Topic { get; set; }
-			public Publisher<ChatMessage> Publisher { get; set; }
-			public Subscriber<ChatMessage> Subscriber { get; set; }
-
-			public TopicInfo TopicInfo { get; private set; }
-
-			public ReadOnlyCollection<PublisherInfo> PublishersInfo { 
-				get {
-					return new ReadOnlyCollection<PublisherInfo>(publishersInfo);
-				}
-			}
-
-			public ReadOnlyCollection<SubscriberInfo> SubscribersInfo { 
-				get {
-					return new ReadOnlyCollection<SubscriberInfo>(subscribersInfo);
-				}
-			}
-
-			public void AddPublisherInfo(PublisherInfo info)
-			{
-				publishersInfo.Add(info);
-			}
-
-			public void RemovePublisherInfo(PublisherInfo info)
-			{
-				int idx = publishersInfo.FindIndex(p => p.Uuid.SequenceEqual(info.Uuid));
-				if (idx != -1)
-					publishersInfo.RemoveAt(idx);
-			}
-
-			public void AddSubscriberInfo(SubscriberInfo info)
-			{
-				subscribersInfo.Add(info);
-			}
-
-			public void RemoveSubscriberInfo(SubscriberInfo info)
-			{
-				int idx = subscribersInfo.FindIndex(s => s.Uuid.SequenceEqual(info.Uuid));
-				if (idx != -1)
-					subscribersInfo.RemoveAt(idx);
-			}
+			public Topic<ChatMessage> Topic { get; private set; }
+			public Publisher<ChatMessage> Publisher { get; private set; }
+			public Subscriber<ChatMessage> Subscriber { get; private set; }
 		}
 	}
 }
-
