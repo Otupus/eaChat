@@ -62,8 +62,8 @@ namespace EaChat
 
 		public void ShowMessage(ChatMessage instance)
 		{
-			string chatText = string.Format("[{0}] {1}: {2}\n", 
-				instance.UserName, instance.Date, instance.Message);
+			string chatText = string.Format("[*{0}*] __{1}__: {2}  \n", 
+				instance.Date.ToShortTimeString(), instance.UserName, instance.Message);
 			view.Markdown += chatText;
 		}
 			
