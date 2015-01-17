@@ -32,7 +32,6 @@ namespace EaChat
 		DataField<string> chatNameCol;
 
 		ParticipantController controller;
-		string chatText;
 
 		public MainWindow()
 		{
@@ -51,16 +50,7 @@ namespace EaChat
 			string userName = AskUserName();
 			controller = new ParticipantController(userName, this);
 
-			chatTextEntry.KeyPressed += HandleKeySendPressed;
-			chatSendBtn.Clicked += HandleSend;
 			CloseRequested += HandleCloseRequested;
-		}
-
-		public void ShowMessage(ChatMessage instance)
-		{
-			chatText += string.Format("[{0}] {1}: {2}\n", 
-				instance.UserName, instance.Date, instance.Message);
-			chatView.Markdown += chatText;
 		}
 
 		public void UpdateChatInfo(string chatName, int numPub, int numSub)
@@ -95,23 +85,6 @@ namespace EaChat
 		{
 			chatStore.SetValue(row, publishersCol, numPub);
 			chatStore.SetValue(row, subscribersCol, numSub);
-		}
-
-		void HandleKeySendPressed(object sender, KeyEventArgs e)
-		{
-			if (e.Key == Key.Return)
-				Send();
-		}
-
-		void HandleSend(object sender, EventArgs e)
-		{
-			Send();
-		}
-
-		void Send()
-		{
-			controller.Send(chatTextEntry.Text, null);
-			chatTextEntry.Text = string.Empty;
 		}
 
 		void HandleCloseRequested(object sender, CloseRequestedEventArgs args)

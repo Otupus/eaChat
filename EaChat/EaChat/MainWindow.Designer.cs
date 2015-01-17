@@ -27,9 +27,7 @@ namespace EaChat
 	public partial class MainWindow : Window
 	{
 		ListView chatList;
-		MarkdownView chatView;
-		TextEntry chatTextEntry;
-		Button chatSendBtn;
+		Notebook chatTabs;
 
 		void CreateComponents()
 		{
@@ -41,30 +39,14 @@ namespace EaChat
 			hpaned.BackgroundColor = Colors.LightSteelBlue;
 
 			chatList = new ListView();
+			chatList.WidthRequest = 150;
 			chatList.HeadersVisible = false;
 			chatList.Margin = 5;
 			hpaned.Panel1.Content = chatList;
 
-			// Chat controls
-			var chatBox = new VBox();
-			hpaned.Panel2.Content= chatBox;
-
-			chatView = new MarkdownView();
-			chatView.Margin = 5;
-			chatView.MarginBottom = 0;
-			chatView.Sensitive = false;
-			chatBox.PackStart(chatView, true, true);
-
-			var chatMsgBox = new HBox();
-			chatMsgBox.Margin = 5;
-			chatMsgBox.Sensitive = false;
-			chatBox.PackStart(chatMsgBox);
-
-			chatTextEntry = new TextEntry();
-			chatMsgBox.PackStart(chatTextEntry, true);
-
-			chatSendBtn = new Button("Send!");
-			chatMsgBox.PackStart(chatSendBtn, vpos: WidgetPlacement.Center);
+			chatTabs = new Notebook();
+			chatTabs.WidthRequest = 650;
+			hpaned.Panel2.Content = chatTabs;
 
 			Padding = new WidgetSpacing();
 			Content = hpaned;
