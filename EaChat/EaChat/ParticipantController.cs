@@ -60,6 +60,11 @@ namespace EaChat
 			private set;
 		}
 
+		public event SubscriberDiscoveredEventHandler SubscriberDiscovered {
+			add    { builtinTopic.SubscriberDiscovered += value; }
+			remove { builtinTopic.SubscriberDiscovered -= value; }
+		}
+
 		public void CreateTopic(string topicName, ReceivedInstanceHandleEvent<ChatMessage> handle)
 		{
 			var topic = participant.CreateTopic<ChatMessage>(topicName);
@@ -83,6 +88,16 @@ namespace EaChat
 
 			var message = new ChatMessage(UserName, text, DateTime.Now);
 			topics[topicName].Publisher.Write(message);
+		}
+
+		public IEnumerable<SubscriberInfo> GetSubscriber(string topicName)
+		{
+			var topicInfo = new TopicInfo { 
+				TopicName = topicName,
+				TopicType = TopicDataType.FromGeneric<ChatMessage>()
+			};
+
+			return builtinTopic.GetSubscribers(topicInfo);
 		}
 
 		void HandleTopicDiscovered(TopicInfo topicInfo, BuiltinEventArgs e)
