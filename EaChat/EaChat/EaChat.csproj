@@ -53,5 +53,6 @@
       <DependentUpon>MainWindow.cs</DependentUpon>
     </Compile>
     <Compile Include="ChatMessage.cs" />
+    <Compile Include="ParticipantController.cs" />
   </ItemGroup>
 </Project>

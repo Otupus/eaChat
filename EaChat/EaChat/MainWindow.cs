@@ -20,11 +20,6 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 using System;
 using Xwt;
-using EaTopic.Topics;
-using EaTopic.Participants;
-using EaTopic.Publishers;
-using EaTopic.Subscribers;
-using EaTopic.Participants.Builtin;
 using Xwt.Formats;
 
 namespace EaChat
@@ -35,55 +30,71 @@ namespace EaChat
 		DataField<int> publishersCol;
 		DataField<int> subscribersCol;
 		DataField<string> chatNameCol;
-		DataField<TopicInfo> topicCol;
 
+		ParticipantController controller;
 		string chatText;
-		string userName;
-
-		Participant participant;
-		Publisher<ChatMessage> publisher;
-		Subscriber<ChatMessage> subscriber;
 
 		public MainWindow()
 		{
 			CreateComponents();
 
-			Dialog userDialog = new Dialog();
-			userDialog.Title = "Type your user name";
-			Table dialogTable = new Table();
-			dialogTable.Add(new Label("User name:"), 0, 0);
-			var userNameEntry = new TextEntry();
-			dialogTable.Add(userNameEntry, 1, 0);
-			userDialog.Content = dialogTable;
-			userDialog.Buttons.Add(new DialogButton(Command.Ok));
-			userDialog.Run(this);
-			userName = userNameEntry.Text;
-			userDialog.Dispose();
-
 			publishersCol  = new DataField<int>();
 			subscribersCol = new DataField<int>();
 			chatNameCol    = new DataField<string>();
-			topicCol  = new DataField<TopicInfo>();
 
-			chatStore = new ListStore(publishersCol, subscribersCol, chatNameCol, topicCol);
+			chatStore = new ListStore(publishersCol, subscribersCol, chatNameCol);
 			chatList.DataSource = chatStore;
 			chatList.Columns.Add("Publishers", publishersCol);
 			chatList.Columns.Add("Subscribers", subscribersCol);
 			chatList.Columns.Add("Name", chatNameCol);
 
-			participant = new Participant(0);
-			participant.BuiltinTopic.PublisherDiscovered += HandlePublisherDiscovered;
-			participant.BuiltinTopic.SubscriberDiscovered += HandleSubscriberDiscovered;
-
-			chatText  = "";
-			var topic = participant.CreateTopic<ChatMessage>("DevChat");
-			publisher  = topic.CreatePublisher();
-			subscriber = topic.CreateSubscriber();
-			subscriber.ReceivedInstance += HandleReceivedInstance;
+			string userName = AskUserName();
+			controller = new ParticipantController(userName, this);
 
 			chatTextEntry.KeyPressed += HandleKeySendPressed;
 			chatSendBtn.Clicked += HandleSend;
 			CloseRequested += HandleCloseRequested;
+		}
+
+		public void ShowMessage(ChatMessage instance)
+		{
+			chatText += string.Format("[{0}] {1}: {2}\n", 
+				instance.UserName, instance.Date, instance.Message);
+			chatView.Markdown += chatText;
+		}
+
+		public void UpdateChatInfo(string chatName, int numPub, int numSub)
+		{
+			int row = FindRow(chatName);
+			if (row == -1)
+				AddChatInfo(chatName, numPub, numSub);
+			else
+				SetChatInfo(row, numPub, numSub);
+		}
+
+		int FindRow(string chatName)
+		{
+			for (int i = 0; i < chatStore.RowCount; i++)
+				if (chatStore.GetValue(i, chatNameCol) == chatName)
+					return i;
+
+			return -1;
+		}
+
+		void AddChatInfo(string chatName, int numPub, int numSub)
+		{
+			int row = chatStore.AddRow();
+			chatStore.SetValues(row,
+				publishersCol,  numPub,
+				subscribersCol, numSub,
+				chatNameCol,    chatName
+			);
+		}
+
+		void SetChatInfo(int row, int numPub, int numSub)
+		{
+			chatStore.SetValue(row, publishersCol, numPub);
+			chatStore.SetValue(row, subscribersCol, numSub);
 		}
 
 		void HandleKeySendPressed(object sender, KeyEventArgs e)
@@ -99,62 +110,8 @@ namespace EaChat
 
 		void Send()
 		{
-			var message = new ChatMessage(userName, chatTextEntry.Text, DateTime.Now);
-			publisher.Write(message);
-			chatTextEntry.Text = "";
-		}
-
-		void HandleReceivedInstance(ChatMessage instance)
-		{
-			chatText += string.Format("[{0}] {1}: {2}\n", 
-				instance.UserName, instance.Date, instance.Message);
-			chatView.LoadText(chatText, TextFormat.Plain);
-		}
-
-		void UpdateChatList(TopicInfo topic)
-		{
-			int row = chatStore.AddRow();
-			chatStore.SetValues(row,
-				publishersCol, participant.BuiltinTopic.GetPublishers(topic).Length,
-				subscribersCol, participant.BuiltinTopic.GetSubscribers(topic).Length,
-				chatNameCol, topic.TopicName,
-				topicCol, topic
-			);
-		}
-
-		int FindRow(string topicName)
-		{
-			for (int i = 0; i < chatStore.RowCount; i++)
-				if (chatStore.GetValue(i, topicCol).TopicName == topicName)
-					return i;
-
-			return -1;
-		}
-
-		void HandlePublisherDiscovered(PublisherInfo pubInfo, BuiltinEventArgs e)
-		{
-			if (e.Change == BuiltinEntityChange.Added) {
-				int row = FindRow(pubInfo.TopicName);
-				if (row != -1) {
-					int currValue = chatStore.GetValue(row, publishersCol);
-					chatStore.SetValue(row, publishersCol, currValue + 1);
-				} else {
-					UpdateChatList(e.Topic);
-				}
-			}
-		}
-
-		void HandleSubscriberDiscovered (SubscriberInfo subInfo, BuiltinEventArgs e)
-		{
-			if (e.Change == BuiltinEntityChange.Added) {
-				int row = FindRow(subInfo.TopicName);
-				if (row != -1) {
-					int currValue = chatStore.GetValue(row, subscribersCol);
-					chatStore.SetValue(row, subscribersCol, currValue + 1);
-				} else {
-					UpdateChatList(e.Topic);
-				}
-			}
+			controller.Send(chatTextEntry.Text, null);
+			chatTextEntry.Text = string.Empty;
 		}
 
 		void HandleCloseRequested(object sender, CloseRequestedEventArgs args)

@@ -27,7 +27,7 @@ namespace EaChat
 	public partial class MainWindow : Window
 	{
 		ListView chatList;
-		RichTextView chatView;
+		MarkdownView chatView;
 		TextEntry chatTextEntry;
 		Button chatSendBtn;
 
@@ -49,12 +49,15 @@ namespace EaChat
 			var chatBox = new VBox();
 			hpaned.Panel2.Content= chatBox;
 
-			chatView = new RichTextView();
+			chatView = new MarkdownView();
 			chatView.Margin = 5;
+			chatView.MarginBottom = 0;
+			chatView.Sensitive = false;
 			chatBox.PackStart(chatView, true, true);
 
 			var chatMsgBox = new HBox();
 			chatMsgBox.Margin = 5;
+			chatMsgBox.Sensitive = false;
 			chatBox.PackStart(chatMsgBox);
 
 			chatTextEntry = new TextEntry();
@@ -65,6 +68,27 @@ namespace EaChat
 
 			Padding = new WidgetSpacing();
 			Content = hpaned;
+		}
+
+		string AskUserName()
+		{
+			Dialog userDialog = new Dialog();
+
+			userDialog.Title = "Type your user name";
+			userDialog.Buttons.Add(new DialogButton(Command.Ok));
+
+			Table dialogTable = new Table();
+			userDialog.Content = dialogTable;
+
+			var userNameEntry = new TextEntry();
+			dialogTable.Add(userNameEntry, 1, 0);
+			dialogTable.Add(new Label("User name:"), 0, 0);
+
+			userDialog.Run(this);
+			string userName = userNameEntry.Text;
+
+			userDialog.Dispose();
+			return userName;
 		}
 	}
 }
