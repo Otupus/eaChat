@@ -19,11 +19,11 @@
 //  You should have received a copy of the GNU General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 using System;
-using EaTopic.Topics;
+using EaTopic.Topics.Types;
 
 namespace EaChat
 {
-	public class ChatMessage : TopicData
+	public class ChatMessage : ReflectionData
 	{
 		public ChatMessage()
 		{
@@ -36,31 +36,11 @@ namespace EaChat
 			this.Date = date;
 		}
 
-		public override TopicDataType Type {
-			get {
-				return TopicDataType.FromGeneric<string, string, DateTime>();
-			}
-		}
-
 		public string UserName { get; private set; }
 
 		public string Message { get; private set; }
 
 		public DateTime Date { get; private set; }
-
-		public override void SerializeData(DataFormatter formatter)
-		{
-			formatter[0] = UserName;
-			formatter[1] = Message;
-			formatter[2] = Date;
-		}
-
-		public override void DeserializeData(DataFormatter formatter)
-		{
-			UserName = formatter[0];
-			Message  = formatter[1];
-			Date = formatter[2];
-		}
 	}
 }
 
