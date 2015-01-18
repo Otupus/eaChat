@@ -106,16 +106,16 @@ namespace EaChat
 
 		public void SetTextFilter(string text, string topicName)
 		{
-			Filter filter = new Filter(topics[topicName].Topic.DataType);
+			Filter filter = new Filter();
 			filter.AddCondition(1, FilterCondition.Contains, text);
-			topics[topicName].Subscriber.SetLocalFilter(filter);
+			topics[topicName].Subscriber.SetRemoteFilter(filter);
 		}
 
 		public void SetUserFilter(string name, string topicName)
 		{
-			Filter filter = new Filter(topics[topicName].Topic.DataType);
+			Filter filter = new Filter();
 			filter.AddCondition(0, FilterCondition.Equals, name);
-			topics[topicName].Subscriber.SetLocalFilter(filter);
+			topics[topicName].Subscriber.SetRemoteFilter(filter);
 		}
 
 		public void UnsetFilter(string topicName)
