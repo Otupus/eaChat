@@ -102,7 +102,6 @@ namespace EaChat
 
 		void AddChatInfo(string chatName, int numPub, int numSub)
 		{
-			remChatBtn.Sensitive = true;
 			int row = chatStore.AddRow();
 			chatStore.SetValues(row,
 				publishersCol,    numPub,
@@ -135,6 +134,7 @@ namespace EaChat
 
 		void CreateChat(string chatName)
 		{
+			remChatBtn.Sensitive = true;
 			chatTabs.Add(new ChatBoxView(controller, chatName), chatName);
 		}
 
