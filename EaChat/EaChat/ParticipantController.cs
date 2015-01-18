@@ -65,6 +65,11 @@ namespace EaChat
 			remove { builtinTopic.SubscriberDiscovered -= value; }
 		}
 
+		public void Dispose()
+		{
+			participant.Dispose();
+		}
+
 		public void CreateTopic(string topicName, ReceivedInstanceHandleEvent<ChatMessage> handle)
 		{
 			var topic = participant.CreateTopic<ChatMessage>(topicName);

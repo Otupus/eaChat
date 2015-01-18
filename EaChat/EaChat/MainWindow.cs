@@ -148,6 +148,7 @@ namespace EaChat
 
 		void HandleCloseRequested(object sender, CloseRequestedEventArgs args)
 		{
+			controller.Dispose();
 			Application.Exit();
 		}
 	}
