@@ -41,7 +41,9 @@ namespace EaChat
 			view = new MarkdownView();
 			view.Margin = 5;
 			view.MarginBottom = 0;
-			chatBox.PackStart(view, true, true);
+			view.CanGetFocus = false;
+			var scrolled = new ScrollView (view) { MinHeight = 200 };
+			chatBox.PackStart(scrolled, true, true);
 
 			var chatMsgBox = new HBox();
 			chatMsgBox.Margin = 5;
