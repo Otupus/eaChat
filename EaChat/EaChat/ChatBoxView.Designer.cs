@@ -32,6 +32,8 @@ namespace EaChat
 		ListView userList;
 		TextEntry filterText;
 		ToggleButton filterBtn;
+		RadioButton filterTextBtn;
+		RadioButton filterUserBtn;
 
 		void CreateComponents()
 		{
@@ -56,13 +58,21 @@ namespace EaChat
 			chatMsgBox.PackStart(sendBtn, vpos: WidgetPlacement.Center);
 
 			var extraBox = new VBox();
-			extraBox.WidthRequest = 100;
+			extraBox.WidthRequest = 150;
 			PackStart(extraBox);
 
 			userList = new ListView();
 			userList.HeadersVisible = false;
 			extraBox.PackStart(userList, true, true);
 			extraBox.PackStart(new Label("Message filter"));
+
+			filterTextBtn = new RadioButton("Text") { Active = true };
+			filterUserBtn = new RadioButton("User");
+			filterUserBtn.Group = filterTextBtn.Group;
+			var filterTypeBox = new HBox();
+			filterTypeBox.PackStart(filterTextBtn);
+			filterTypeBox.PackStart(filterUserBtn);
+			extraBox.PackStart(filterTypeBox);
 
 			filterText = new TextEntry();
 			extraBox.PackStart(filterText, hpos: WidgetPlacement.Fill);

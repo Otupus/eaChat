@@ -61,9 +61,12 @@ namespace EaChat
 
 		void HandleToggledFilter(object sender, EventArgs e)
 		{
-			if (filterBtn.Active && !string.IsNullOrEmpty(filterText.Text))
-				controller.SetFilter(filterText.Text, ChatName);
-			else if (!filterBtn.Active)
+			if (filterBtn.Active && !string.IsNullOrEmpty(filterText.Text)) {
+				if (filterTextBtn.Active)
+					controller.SetTextFilter(filterText.Text, ChatName);
+				else if (filterUserBtn.Active)
+					controller.SetUserFilter(filterText.Text, ChatName);
+			} else if (!filterBtn.Active)
 				controller.UnsetFilter(ChatName);
 		}
 

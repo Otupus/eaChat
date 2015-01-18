@@ -99,10 +99,17 @@ namespace EaChat
 			topics[topicName].Publisher.Write(message);
 		}
 
-		public void SetFilter(string text, string topicName)
+		public void SetTextFilter(string text, string topicName)
 		{
 			Filter filter = new Filter(topics[topicName].Topic.DataType);
 			filter.AddCondition(1, FilterCondition.Contains, text);
+			topics[topicName].Subscriber.SetLocalFilter(filter);
+		}
+
+		public void SetUserFilter(string name, string topicName)
+		{
+			Filter filter = new Filter(topics[topicName].Topic.DataType);
+			filter.AddCondition(0, FilterCondition.Equals, name);
 			topics[topicName].Subscriber.SetLocalFilter(filter);
 		}
 
