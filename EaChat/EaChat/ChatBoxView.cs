@@ -54,8 +54,17 @@ namespace EaChat
 			foreach (var subInfo in controller.GetSubscribers(chatName))
 				UpdateUserList(subInfo, new BuiltinEventArgs(null, BuiltinEntityChange.Added));
 
+			filterBtn.Toggled += HandleToggledFilter;
 			textEntry.KeyPressed += HandleKeySendPressed;
 			sendBtn.Clicked += HandleSend;
+		}
+
+		void HandleToggledFilter(object sender, EventArgs e)
+		{
+			if (filterBtn.Active && !string.IsNullOrEmpty(filterText.Text))
+				controller.SetFilter(filterText.Text, ChatName);
+			else if (!filterBtn.Active)
+				controller.UnsetFilter(ChatName);
 		}
 
 		public string ChatName {

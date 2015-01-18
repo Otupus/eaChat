@@ -31,7 +31,7 @@ namespace EaChat
 
 		ListView userList;
 		TextEntry filterText;
-		Button filterBtn;
+		ToggleButton filterBtn;
 
 		void CreateComponents()
 		{
@@ -65,11 +65,9 @@ namespace EaChat
 			extraBox.PackStart(new Label("Message filter"));
 
 			filterText = new TextEntry();
-			filterText.Sensitive = false;
 			extraBox.PackStart(filterText, hpos: WidgetPlacement.Fill);
 
-			filterBtn = new Button("Filter");
-			filterBtn.Sensitive = false;
+			filterBtn = new ToggleButton("Set");
 			extraBox.PackStart(filterBtn, hpos: WidgetPlacement.Fill);
 		}
 	}
