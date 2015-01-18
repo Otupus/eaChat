@@ -36,6 +36,8 @@ namespace EaChat
 		VBox usernameBox;
 		Button usernameBtn;
 		TextEntry usernameText;
+		CheckBox isGhostCheck;
+		SpinButton domainBtn;
 
 		void CreateComponents()
 		{
@@ -71,13 +73,22 @@ namespace EaChat
 			chatTabs = new Notebook();
 			chatTabs.WidthRequest = 650;
 
+			CreateInitialInfoComponentes();
+			hpaned.Panel2.Content = usernameBox;
+
+			Padding = new WidgetSpacing();
+			Content = hpaned;
+		}
+
+		void CreateInitialInfoComponentes()
+		{
 			usernameBox = new VBox();
 			usernameBox.WidthRequest = 650;
 			usernameBox.PackStart(new Label("Type your user name:        "), true, 
 				hpos: WidgetPlacement.Center, vpos: WidgetPlacement.End);
 
 			var usernameEntryBox = new HBox();
-			usernameBox.PackStart(usernameEntryBox, true, hpos: WidgetPlacement.Center,
+			usernameBox.PackStart(usernameEntryBox, false, hpos: WidgetPlacement.Center,
 				vpos: WidgetPlacement.Start);
 
 			usernameText = new TextEntry();
@@ -86,10 +97,18 @@ namespace EaChat
 			usernameBtn = new Button("Ok!");
 			usernameEntryBox.PackStart(usernameBtn);
 
-			hpaned.Panel2.Content = usernameBox;
+			isGhostCheck = new CheckBox("Are you a ghost?");
+			usernameBox.PackStart(isGhostCheck, false, hpos: WidgetPlacement.Center,
+				vpos: WidgetPlacement.Start);
 
-			Padding = new WidgetSpacing();
-			Content = hpaned;
+			var domainBox = new HBox();
+			usernameBox.PackStart(domainBox, true, hpos: WidgetPlacement.Center,
+				vpos: WidgetPlacement.Start);
+
+			domainBox.PackStart(new Label("Domain:"));
+
+			domainBtn = new SpinButton { Digits = 0, MaximumValue = 255, IncrementValue = 1 };
+			domainBox.PackStart(domainBtn);
 		}
 
 		string AskChatName()

@@ -37,8 +37,9 @@ namespace EaChat
 
 		public ChatBoxView(ParticipantController controller, string chatName)
 		{
-			CreateComponents();
+			this.controller = controller;
 			ChatName = chatName;
+			CreateComponents();
 
 			usernameCol = new DataField<string>();
 			userUuidCol = new DataField<byte[]>();
@@ -47,11 +48,10 @@ namespace EaChat
 			userList.DataSource = userStore;
 			userList.Columns.Add("Users", userImgCol, usernameCol);
 
-			this.controller = controller;
 			this.controller.CreateTopic(chatName, ShowMessage);
 
 			controller.SubscriberDiscovered += UpdateUserList;
-			foreach (var subInfo in controller.GetSubscribers(chatName))
+			foreach (var subInfo in controller.GetSubscribers(chatName).ToArray())
 				UpdateUserList(subInfo, new BuiltinEventArgs(null, BuiltinEntityChange.Added));
 
 			filterBtn.Toggled += HandleToggledFilter;
@@ -113,7 +113,7 @@ namespace EaChat
 			else if (IsUserPublisher(info.TopicName, info.Metadadata))
 				return Image.FromResource("EaChat.res.user.png");
 			else
-				return Image.FromResource("EaChat.res_gray.png");
+				return Image.FromResource("EaChat.res.user_gray.png");
 		}
 
 		bool IsUserPublisher(string topicName, string username)

@@ -64,19 +64,23 @@ namespace EaChat
 
 		void HandleUsernameClicked(object sender, EventArgs e)
 		{
-			InitializeController(usernameText.Text);
+			InitializeController();
 		}
 
 		void HandleUsernameKeyPressed(object sender, KeyEventArgs e)
 		{
 			if (e.Key == Key.Return)
-				InitializeController(usernameText.Text);
+				InitializeController();
 		}
 
-		void InitializeController(string userName)
+		void InitializeController()
 		{
+			var userName = usernameText.Text;
+			var domain = (int)domainBtn.Value;
+			var isGhost = isGhostCheck.Active;
+
 			Title += "  ~ " + userName;
-			controller = new ParticipantController(userName, this);
+			controller = new ParticipantController(domain, userName, isGhost, this);
 
 			usernameBox.Dispose();
 			hpaned.Panel2.Content = chatTabs;

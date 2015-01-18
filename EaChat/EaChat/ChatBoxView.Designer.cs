@@ -49,7 +49,8 @@ namespace EaChat
 
 			var chatMsgBox = new HBox();
 			chatMsgBox.Margin = 5;
-			chatBox.PackStart(chatMsgBox);
+			if (!controller.IsGhost)
+				chatBox.PackStart(chatMsgBox);
 
 			textEntry = new TextEntry();
 			chatMsgBox.PackStart(textEntry, true);

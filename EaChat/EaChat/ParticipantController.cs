@@ -36,21 +36,27 @@ namespace EaChat
 		BuiltinTopic builtinTopic;
 		Dictionary<string, TopicEntities> topics;
 
-		public ParticipantController(string userName, MainWindow window)
+		public ParticipantController(int domain, string userName, bool isGhost, MainWindow window)
 		{
 			topics = new Dictionary<string, TopicEntities>();
-			participant = new Participant(0);
+			participant = new Participant(domain);
 
 			builtinTopic = participant.BuiltinTopic;
 		    builtinTopic.PublisherDiscovered  += HandlePublisherDiscovered;
 			builtinTopic.SubscriberDiscovered += HandleSubscriberDiscovered;
 			builtinTopic.TopicDiscovered += HandleTopicDiscovered;
 
+			IsGhost = isGhost;
 			UserName   = userName;
 			MainWindow = window;
 		}
 
 		public string UserName {
+			get;
+			private set;
+		}
+
+		public bool IsGhost {
 			get;
 			private set;
 		}
@@ -74,7 +80,10 @@ namespace EaChat
 		{
 			var topic = participant.CreateTopic<ChatMessage>(topicName);
 
-			var publisher  = topic.CreatePublisher(UserName);
+			Publisher<ChatMessage> publisher = null;
+			if (!IsGhost)
+				publisher  = topic.CreatePublisher(UserName);
+
 			var subscriber = topic.CreateSubscriber(UserName);
 			subscriber.ReceivedInstance += handle;
 
@@ -98,6 +107,9 @@ namespace EaChat
 		public void Send(string text, string topicName)
 		{
 			if (string.IsNullOrEmpty(topicName) || !topics.ContainsKey(topicName))
+				return;
+
+			if (IsGhost)
 				return;
 
 			var message = new ChatMessage(UserName, text, DateTime.Now);
