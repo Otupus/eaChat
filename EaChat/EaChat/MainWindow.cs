@@ -58,6 +58,7 @@ namespace EaChat
 			if (string.IsNullOrEmpty(userName))
 				Application.Exit();
 
+			Title += "  ~ " + userName;
 			controller = new ParticipantController(userName, this);
 
 			addChatBtn.Clicked += HandleAddChat;
