@@ -23,6 +23,7 @@ using System.Linq;
 using EaTopic.Participants.Builtin;
 using EaTopic.Subscribers;
 using Xwt;
+using Xwt.Drawing;
 
 namespace EaChat
 {
@@ -30,6 +31,7 @@ namespace EaChat
 	{
 		ParticipantController controller;
 		ListStore userStore;
+		DataField<Image> userImgCol;
 		DataField<string> usernameCol;
 		DataField<byte[]> userUuidCol;
 
@@ -40,16 +42,17 @@ namespace EaChat
 
 			usernameCol = new DataField<string>();
 			userUuidCol = new DataField<byte[]>();
-			userStore = new ListStore(usernameCol, userUuidCol);
+			userImgCol  = new DataField<Image>();
+			userStore = new ListStore(usernameCol, userImgCol, userUuidCol);
 			userList.DataSource = userStore;
-			userList.Columns.Add("Users", usernameCol);
-
-			controller.SubscriberDiscovered += UpdateUserList;
-			foreach (var subInfo in controller.GetSubscriber(chatName))
-				UpdateUserList(subInfo, new BuiltinEventArgs(null, BuiltinEntityChange.Added));
+			userList.Columns.Add("Users", userImgCol, usernameCol);
 
 			this.controller = controller;
 			this.controller.CreateTopic(chatName, ShowMessage);
+
+			controller.SubscriberDiscovered += UpdateUserList;
+			foreach (var subInfo in controller.GetSubscribers(chatName))
+				UpdateUserList(subInfo, new BuiltinEventArgs(null, BuiltinEntityChange.Added));
 
 			textEntry.KeyPressed += HandleKeySendPressed;
 			sendBtn.Clicked += HandleSend;
@@ -84,9 +87,26 @@ namespace EaChat
 				userStore.AddRow(),
 				usernameCol,
 				info.Metadadata,
+				userImgCol,
+				GetUserImage(info),
 				userUuidCol,
 				info.Uuid
 			);
+		}
+
+		Image GetUserImage(SubscriberInfo info)
+		{
+			if (info.Metadadata == controller.UserName)
+				return Image.FromResource("EaChat.res.user_go.png");
+			else if (IsUserPublisher(info.TopicName, info.Metadadata))
+				return Image.FromResource("EaChat.res.user.png");
+			else
+				return Image.FromResource("EaChat.res_gray.png");
+		}
+
+		bool IsUserPublisher(string topicName, string username)
+		{
+			return controller.GetPublishers(topicName).Any(p => p.Metadata == username);
 		}
 
 		void RemoveUserFromList(SubscriberInfo info)

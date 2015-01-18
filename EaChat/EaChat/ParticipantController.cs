@@ -90,7 +90,7 @@ namespace EaChat
 			topics[topicName].Publisher.Write(message);
 		}
 
-		public IEnumerable<SubscriberInfo> GetSubscriber(string topicName)
+		public IEnumerable<SubscriberInfo> GetSubscribers(string topicName)
 		{
 			var topicInfo = new TopicInfo { 
 				TopicName = topicName,
@@ -98,6 +98,16 @@ namespace EaChat
 			};
 
 			return builtinTopic.GetSubscribers(topicInfo);
+		}
+
+		public IEnumerable<PublisherInfo> GetPublishers(string topicName)
+		{
+			var topicInfo = new TopicInfo {
+				TopicName = topicName,
+				TopicType = TopicDataType.FromGeneric<ChatMessage>()
+			};
+
+			return builtinTopic.GetPublishers(topicInfo);
 		}
 
 		void HandleTopicDiscovered(TopicInfo topicInfo, BuiltinEventArgs e)

@@ -65,5 +65,8 @@
   <ItemGroup>
     <EmbeddedResource Include="res\arrow_down.png" />
     <EmbeddedResource Include="res\arrow_up.png" />
+    <EmbeddedResource Include="res\user.png" />
+    <EmbeddedResource Include="res\user_go.png" />
+    <EmbeddedResource Include="res\user_gray.png" />
   </ItemGroup>
 </Project>
