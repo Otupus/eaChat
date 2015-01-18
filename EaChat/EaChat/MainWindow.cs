@@ -54,17 +54,33 @@ namespace EaChat
 			chatList.Columns.Add("Name", chatNameCol);
 			chatList.SelectionChanged += HandleChatSelected;
 
-			string userName = AskUserName();
-			if (string.IsNullOrEmpty(userName))
-				Application.Exit();
-
-			Title += "  ~ " + userName;
-			controller = new ParticipantController(userName, this);
-
+			usernameBtn.Clicked += HandleUsernameClicked;
+			usernameText.KeyPressed += HandleUsernameKeyPressed;
 			addChatBtn.Clicked += HandleAddChat;
 			remChatBtn.Clicked += HandleRemChat;
 
 			CloseRequested += HandleCloseRequested;
+		}
+
+		void HandleUsernameClicked(object sender, EventArgs e)
+		{
+			InitializeController(usernameText.Text);
+		}
+
+		void HandleUsernameKeyPressed(object sender, KeyEventArgs e)
+		{
+			if (e.Key == Key.Return)
+				InitializeController(usernameText.Text);
+		}
+
+		void InitializeController(string userName)
+		{
+			Title += "  ~ " + userName;
+			controller = new ParticipantController(userName, this);
+
+			usernameBox.Dispose();
+			hpaned.Panel2.Content = chatTabs;
+			addChatBtn.Sensitive = true;
 		}
 
 		void HandleAddChat(object sender, EventArgs e)
@@ -148,7 +164,9 @@ namespace EaChat
 
 		void HandleCloseRequested(object sender, CloseRequestedEventArgs args)
 		{
-			controller.Dispose();
+			if (controller != null)
+				controller.Dispose();
+
 			Application.Exit();
 		}
 	}

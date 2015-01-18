@@ -30,7 +30,12 @@ namespace EaChat
 		Button addChatBtn;
 		Button remChatBtn;
 
+		HPaned hpaned;
 		Notebook chatTabs;
+
+		VBox usernameBox;
+		Button usernameBtn;
+		TextEntry usernameText;
 
 		void CreateComponents()
 		{
@@ -38,7 +43,7 @@ namespace EaChat
 			Width  = 800;
 			Height = 600;
 
-			var hpaned = new HPaned();
+			hpaned = new HPaned();
 			hpaned.BackgroundColor = Colors.LightSteelBlue;
 
 			var listBox = new VBox();
@@ -56,6 +61,7 @@ namespace EaChat
 			listBox.PackStart(btnBox, false, hpos: WidgetPlacement.Fill);
 
 			addChatBtn = new Button(StockIcons.Add);
+			addChatBtn.Sensitive = false;
 			btnBox.PackStart(addChatBtn);
 
 			remChatBtn = new Button(StockIcons.Remove);
@@ -64,15 +70,26 @@ namespace EaChat
 
 			chatTabs = new Notebook();
 			chatTabs.WidthRequest = 650;
-			hpaned.Panel2.Content = chatTabs;
+
+			usernameBox = new VBox();
+			usernameBox.WidthRequest = 650;
+			usernameBox.PackStart(new Label("Type your user name:        "), true, 
+				hpos: WidgetPlacement.Center, vpos: WidgetPlacement.End);
+
+			var usernameEntryBox = new HBox();
+			usernameBox.PackStart(usernameEntryBox, true, hpos: WidgetPlacement.Center,
+				vpos: WidgetPlacement.Start);
+
+			usernameText = new TextEntry();
+			usernameEntryBox.PackStart(usernameText);
+
+			usernameBtn = new Button("Ok!");
+			usernameEntryBox.PackStart(usernameBtn);
+
+			hpaned.Panel2.Content = usernameBox;
 
 			Padding = new WidgetSpacing();
 			Content = hpaned;
-		}
-
-		string AskUserName()
-		{
-			return AskTextDialog("Type your user name", "User name:");
 		}
 
 		string AskChatName()
