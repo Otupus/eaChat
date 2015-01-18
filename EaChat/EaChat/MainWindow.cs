@@ -61,6 +61,7 @@ namespace EaChat
 			controller = new ParticipantController(userName, this);
 
 			addChatBtn.Clicked += HandleAddChat;
+			remChatBtn.Clicked += HandleRemChat;
 
 			CloseRequested += HandleCloseRequested;
 		}
@@ -71,6 +72,14 @@ namespace EaChat
 
 			if (!string.IsNullOrEmpty(chatName))
 				RequestChat(chatName);
+		}
+
+		void HandleRemChat(object sender, EventArgs e)
+		{
+			chatTabs.CurrentTab.Child.Dispose();
+			chatTabs.Tabs.Remove(chatTabs.CurrentTab);
+			if (chatTabs.Tabs.Count == 0)
+				remChatBtn.Sensitive = false;
 		}
 
 		public void UpdateChatInfo(string chatName, int numPub, int numSub)
@@ -93,6 +102,7 @@ namespace EaChat
 
 		void AddChatInfo(string chatName, int numPub, int numSub)
 		{
+			remChatBtn.Sensitive = true;
 			int row = chatStore.AddRow();
 			chatStore.SetValues(row,
 				publishersCol,    numPub,

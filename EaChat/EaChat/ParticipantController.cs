@@ -76,6 +76,15 @@ namespace EaChat
 			topics.Add(topicName, new TopicEntities(topic, publisher, subscriber));
 		}
 
+		public void CloseTopic(string topicName)
+		{
+			if (!topics.ContainsKey(topicName))
+				return;
+
+			topics[topicName].Topic.Dispose();
+			topics.Remove(topicName);
+		}
+
 		public bool IsTopicOpened(string topicName)
 		{
 			return topics.ContainsKey(topicName);

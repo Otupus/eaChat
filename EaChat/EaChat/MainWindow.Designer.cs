@@ -59,6 +59,7 @@ namespace EaChat
 			btnBox.PackStart(addChatBtn);
 
 			remChatBtn = new Button(StockIcons.Remove);
+			remChatBtn.Sensitive = false;
 			btnBox.PackStart(remChatBtn);
 
 			chatTabs = new Notebook();

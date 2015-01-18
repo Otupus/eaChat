@@ -141,6 +141,12 @@ namespace EaChat
 			controller.Send(textEntry.Text, ChatName);
 			textEntry.Text = string.Empty;
 		}
+
+		protected override void Dispose(bool disposing)
+		{
+			base.Dispose(disposing);
+			controller.CloseTopic(ChatName);
+		}
 	}
 }
 
