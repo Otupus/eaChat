@@ -28,7 +28,7 @@ namespace EaChat
 		[STAThread]
 		public static void Main(string[] args)
 		{
-			Application.Initialize(ToolkitType.Gtk);
+			Application.Initialize();
 			var mainWindow = new MainWindow();
 			mainWindow.Show();
 			Application.Run();
